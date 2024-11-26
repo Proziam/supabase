@@ -1,0 +1,146 @@
+---
+title: 'Use Supabase with Rust'
+subtitle: 'Learn how to create a Supabase project, register users, and store files.'
+breadcrumb: 'Framework Quickstarts'
+hideToc: true
+---
+
+<StepHikeCompact>
+
+  <StepHikeCompact.Step step={1}>
+    
+    <QuickstartDbSetup />
+
+  </StepHikeCompact.Step>
+
+  <StepHikeCompact.Step step={2}>
+
+    <StepHikeCompact.Details title="Create A Rust App">
+
+    Create a rust app using the `cargo new` command.
+
+    </StepHikeCompact.Details>
+
+    <StepHikeCompact.Code>
+
+      ```bash Terminal
+      cargo new
+      ```
+
+    </StepHikeCompact.Code>
+
+  </StepHikeCompact.Step>
+
+  <StepHikeCompact.Step step={3}>
+    <StepHikeCompact.Details title="Install the Supabase client crates">
+
+    To get started install the `supabase-auth` and `supabase-storage-rs` crates which provides an interface for working with Supabase in rust.
+
+    Navigate to the root directory of your cargo app and install `supabase-auth` and `supabase-storage-rs`.
+
+    </StepHikeCompact.Details>
+
+    <StepHikeCompact.Code>
+
+      ```bash Terminal
+      cargo add supabase-auth && cargo add supabase-storage-rs
+      ```
+
+    </StepHikeCompact.Code>
+
+  </StepHikeCompact.Step>
+
+  <StepHikeCompact.Step step={4}>
+    <StepHikeCompact.Details title="Create the Supabase client">
+
+    You can organize your code however you see fit, but for this example add the following code to your `main.rs` file to initialize the supabase clients with your project URL, JWT Secret, and private API (service role) key:
+
+    <ProjectConfigVariables variable="SUPABASE_JWT_SECRET" />
+    <ProjectConfigVariables variable="SUPABASE_API_KEY" />
+    <ProjectConfigVariables variable="SUPABASE_URL" />
+
+    </StepHikeCompact.Details>
+
+    <StepHikeCompact.Code>
+
+      ```rs main.rs
+        import { createClient } from '@supabase/supabase-js'
+
+        export const supabase = createClient('https://<project>.supabase.co', '<your-anon-key>')
+      ```
+
+    </StepHikeCompact.Code>
+
+  </StepHikeCompact.Step>
+
+  <StepHikeCompact.Step step={5}>
+    <StepHikeCompact.Details title="Query data from the app">
+
+    Use `load` method to fetch the data server-side and display the query results as a simple list.
+
+    Create `+page.server.js` file in the `src/routes` directory with the following code.
+
+    </StepHikeCompact.Details>
+    <StepHikeCompact.Code>
+
+
+      ```js src/routes/+page.server.js
+        import { supabase } from "$lib/supabaseClient";
+
+        export async function load() {
+          const { data } = await supabase.from("countries").select();
+          return {
+            countries: data ?? [],
+          };
+        }
+      ```
+
+    </StepHikeCompact.Code>
+
+    <StepHikeCompact.Details title="">
+
+    Replace the existing content in your `+page.svelte` file in the `src/routes` directory with the following code.
+
+    </StepHikeCompact.Details>
+    <StepHikeCompact.Code>
+
+
+      ```svelte src/routes/+page.svelte
+        <script>
+          let { data } = $props();
+        </script>
+
+        <ul>
+          {#each data.countries as country}
+            <li>{country.name}</li>
+          {/each}
+        </ul>
+      ```
+
+    </StepHikeCompact.Code>
+
+  </StepHikeCompact.Step>
+
+  <StepHikeCompact.Step step={6}>
+    <StepHikeCompact.Details title="Start the app">
+
+    Start the app and go to http://localhost:5173 in a browser and you should see the list of countries.
+
+    </StepHikeCompact.Details>
+
+    <StepHikeCompact.Code>
+
+      ```bash Terminal
+      npm run dev
+      ```
+
+    </StepHikeCompact.Code>
+
+  </StepHikeCompact.Step>
+</StepHikeCompact>
+
+## Next steps
+
+- Set up [Auth](/docs/guides/auth) for your app
+- [Insert more data](/docs/guides/database/import-data) into your database
+- Upload and serve static files using [Storage](/docs/guides/storage)
